@@ -31,6 +31,12 @@ public class AutoRobot {
      lights[RIGHT] = Tile.parse(lRight.readValue());
      //lights[LEFT] =  Tile.parse(lLeft.readValue()));
     }
+
+	public void move(Direction d){
+		pilot.arc(d.radius * ARC_RADIUS, d.angle);//angular component
+		pilot.travel(d.travel * TILE_SIZE);//linear component
+		path.push(d);//record movement
+	}
     public static void main(String[] args){
      AutoRobot bot = new AutoRobot();
      bot.update();
