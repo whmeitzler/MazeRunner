@@ -28,7 +28,6 @@ public class AutoRobot {
     public static void main(String[] args){
      AutoRobot bot = new AutoRobot();
      bot.checkPath(Direction.FORWARD);
-     bot.printStack();
     }
     
     public void scanTiles() {
@@ -48,8 +47,7 @@ public class AutoRobot {
 	}
     
     public boolean checkPath(Direction direction) {
-        int temp;
-        int count = -1; 		//Tracks # of moves into each path
+        int count; 		//Tracks # of moves into each path
         boolean correctPath = true;
         
         if(tiles == TileSet.DEAD_END)
@@ -57,6 +55,7 @@ public class AutoRobot {
         
         move(direction);
         path.push(direction);
+        count = 1;
         
         while(true) {
             try{Thread.sleep(200);}catch(Exception e){}
@@ -68,18 +67,20 @@ public class AutoRobot {
             }
             
             else if(tiles == TileSet.INTERSECTION) {
-                checkPath(Direction.ARC_RIGHT);
+                checkPath(Direction.SPIN_RIGHT);
                 checkPath(Direction.FORWARD);
-                checkPath(Direction.ARC_LEFT); 
+                checkPath(Direction.SPIN_LEFT); 
             }
                     
             else if(tiles == TileSet.RIGHT || tiles == TileSet.END_RIGHT) {
-                checkPath(Direction.ARC_RIGHT);
+                move(Direction.FORWARD);
+                path.push(Direction.FORWARD);
+                checkPath(Direction.SPIN_RIGHT);
                 checkPath(Direction.FORWARD);
             }
         
             else if(tiles == TileSet.LEFT || tiles == TileSet.END_LEFT) {
-                checkPath(Direction.ARC_LEFT);
+                checkPath(Direction.SPIN_LEFT);
                 checkPath(Direction.FORWARD);
             }
         
@@ -88,98 +89,36 @@ public class AutoRobot {
                 path.push(Direction.FORWARD);
                 System.out.println("End found.");
                 Button.ENTER.waitForPressAndRelease();
+                exitMaze();
             }
             
             else if (tiles == TileSet.DEAD_END) {
                 reversePath(count);
                 if(direction == Direction.FORWARD) {
                     move(Direction.SPIN_BACK);
+                    correctPath = false;
+                    break;
                 }
-                else {
-                    move(direction);
-                }   
-                correctPath = false;
-                break;
             }
             count++;
         }
-        
         return correctPath;
     }   
     
     public void reversePath(int count) {
         Direction d;
         move(Direction.SPIN_BACK);
-        path.pop();     //Clears the forward move into the dead end.
         
-        while(count > 0) {//ISSUE: What is count? Should it be path.size() instead?
-            d = path.pop();
-            switch(d) {
-                case ARC_RIGHT:
-                    move(Direction.ARC_LEFT);   
-                    break;
-                case ARC_LEFT:
-                    move(Direction.ARC_RIGHT);
-                    break;
-                case FORWARD:
-                    move(Direction.FORWARD);
-                    break;
-            }
-            count--;
-        }
+        for(int i=count; i>0; i--) {
+            move(path.pop());
+        }    
     }                            
      
     public void exitMaze() {
         Direction d;
-        
-        path = invertTurns(path);
-        
         while(!path.isEmpty()) {
-            d = path.pop();
-            switch(d) {
-                case ARC_RIGHT:
-                    System.out.print('R');
-                    move(Direction.ARC_RIGHT);  
-                    break;
-                case SPIN_LEFT:
-                    System.out.print('L');
-                    move(Direction.ARC_LEFT);
-                    break;
-                case FORWARD:
-                    System.out.print('F');
-                    move(Direction.FORWARD);
-                    break;
-            }
+            move(path.pop().invertTurns());
             try{Thread.sleep(200);} catch(Exception e) {}   
         }
-    }
-    
-    public Stack<Direction> invertTurns(Stack<Direction> path) {
-        Stack<Direction> tempStack = new Stack<Direction>();
-        Direction temp;
-        
-        while(!path.isEmpty()){
-            tempStack.push(path.pop());
-        }
-        
-        while(!tempStack.isEmpty()) {
-            temp = tempStack.pop();
-            
-            if(temp == Direction.SPIN_RIGHT)           //This block inverts directions:
-                path.push(Direction.SPIN_LEFT);    // R=L, L=R, F=F
-            else if(temp == Direction.SPIN_LEFT)
-                path.push(Direction.SPIN_RIGHT);    
-            else
-                path.push(Direction.FORWARD);               
-        }
-        
-        return path;    
-    }
-    
-    public void printStack() {
-        while(!path.isEmpty()) {
-            System.out.println(path.pop());
-        }
-    }
-    
+    }    
 }
