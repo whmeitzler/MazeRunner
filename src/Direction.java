@@ -5,8 +5,8 @@ public enum Direction{
      BACKWARD	 ( 0,   0,-1),
      ARC_LEFT	 (-1,  -90, 0),
      ARC_RIGHT  ( 1,  90, 0),
-     SPIN_LEFT	 ( 0,  90, 0),
-	SPIN_RIGHT ( 0, -90, 0);
+     SPIN_LEFT	 ( 0,  -90, 0),
+	SPIN_RIGHT ( 0, 90, 0);
 	 
     public int radius;
     public int angle;
