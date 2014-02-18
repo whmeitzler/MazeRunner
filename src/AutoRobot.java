@@ -28,6 +28,7 @@ public class AutoRobot {
     public static void main(String[] args){
      AutoRobot bot = new AutoRobot();
      bot.checkPath(Direction.FORWARD);
+     bot.printStack();
     }
     
     public void scanTiles() {
@@ -48,69 +49,59 @@ public class AutoRobot {
     
     public boolean checkPath(Direction direction) {
         int temp;
-        int count = 0; 		//Tracks # of moves into each path
+        int count = -1; 		//Tracks # of moves into each path
         boolean correctPath = true;
         
+        if(tiles == TileSet.DEAD_END)
+            return false;
+        
+        move(direction);
+        path.push(direction);
+        
         while(true) {
-            try{Thread.sleep(300);}catch(Exception e){}
+            try{Thread.sleep(200);}catch(Exception e){}
             scanTiles();
-
+            
             if(tiles == TileSet.CENTER) {
-                pilot.travel(TILE_SIZE);
+                move(Direction.FORWARD);
                 path.push(Direction.FORWARD);
             }
             
             else if(tiles == TileSet.INTERSECTION) {
-                pilot.travel(TILE_SIZE/2);
-                path.push(Direction.FORWARD);
-                pilot.rotate(90);
-                path.push(Direction.SPIN_RIGHT);
-                checkPath(Direction.SPIN_RIGHT);
+                checkPath(Direction.ARC_RIGHT);
                 checkPath(Direction.FORWARD);
-                checkPath(Direction.SPIN_LEFT); 
+                checkPath(Direction.ARC_LEFT); 
             }
                     
             else if(tiles == TileSet.RIGHT || tiles == TileSet.END_RIGHT) {
-                pilot.travel(TILE_SIZE/1.5);
-                path.push(Direction.FORWARD);
-                pilot.rotate(90);
-                path.push(Direction.SPIN_RIGHT);
-                checkPath(Direction.SPIN_RIGHT);
+                checkPath(Direction.ARC_RIGHT);
                 checkPath(Direction.FORWARD);
             }
         
             else if(tiles == TileSet.LEFT || tiles == TileSet.END_LEFT) {
-                pilot.travel(TILE_SIZE/2);
-                path.push(Direction.FORWARD);
-                pilot.rotate(-90);
-                path.push(Direction.SPIN_LEFT);
-                checkPath(Direction.SPIN_LEFT);
+                checkPath(Direction.ARC_LEFT);
                 checkPath(Direction.FORWARD);
             }
         
             else if (tiles == TileSet.END) {
-                pilot.travel(TILE_SIZE);
+                move(Direction.FORWARD);
                 path.push(Direction.FORWARD);
                 System.out.println("End found.");
-                while(true){}
+                Button.ENTER.waitForPressAndRelease();
             }
             
             else if (tiles == TileSet.DEAD_END) {
                 reversePath(count);
-                switch(direction) {
-                    case SPIN_RIGHT:
-                        pilot.rotate(90);
-                        break;
-                    case SPIN_LEFT:
-                        pilot.rotate(-90);
-                        break;
-                    case FORWARD:
-                        pilot.rotate(180);
-                        break;        
+                if(direction == Direction.FORWARD) {
+                    move(Direction.SPIN_BACK);
                 }
+                else {
+                    move(direction);
+                }   
                 correctPath = false;
                 break;
             }
+            count++;
         }
         
         return correctPath;
@@ -118,19 +109,20 @@ public class AutoRobot {
     
     public void reversePath(int count) {
         Direction d;
-        pilot.rotate(180);
+        move(Direction.SPIN_BACK);
+        path.pop();     //Clears the forward move into the dead end.
         
         while(count > 0) {
             d = path.pop();
             switch(d) {
-                case SPIN_RIGHT:
-                    pilot.rotate(90);   
+                case ARC_RIGHT:
+                    move(Direction.ARC_LEFT);   
                     break;
-                case SPIN_LEFT:
-                    pilot.rotate(-90);
+                case ARC_LEFT:
+                    move(Direction.ARC_RIGHT);
                     break;
                 case FORWARD:
-                    pilot.travel(TILE_SIZE);
+                    move(Direction.FORWARD);
                     break;
             }
             count--;
@@ -145,20 +137,20 @@ public class AutoRobot {
         while(!path.isEmpty()) {
             d = path.pop();
             switch(d) {
-                case SPIN_RIGHT:
+                case ARC_RIGHT:
                     System.out.print('R');
-                    pilot.rotate(90);   
+                    move(Direction.ARC_RIGHT);  
                     break;
                 case SPIN_LEFT:
                     System.out.print('L');
-                    pilot.rotate(-90);
+                    move(Direction.ARC_LEFT);
                     break;
                 case FORWARD:
                     System.out.print('F');
-                    pilot.travel(TILE_SIZE);
+                    move(Direction.FORWARD);
                     break;
             }
-            try{Thread.sleep(400);} catch(Exception e) {}   
+            try{Thread.sleep(200);} catch(Exception e) {}   
         }
     }
     
@@ -183,4 +175,11 @@ public class AutoRobot {
         
         return path;    
     }
+    
+    public void printStack() {
+        while(!path.isEmpty()) {
+            System.out.println(path.pop());
+        }
+    }
+    
 }
