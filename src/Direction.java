@@ -17,7 +17,7 @@ public enum Direction{
 	   this.angle = angle;
 	   this.travel = travel;
     }
-    public Direction invert(){
+    public Direction invertAll(){
      switch(this){
 		  case STAY:
 				return STAY;
@@ -36,7 +36,23 @@ public enum Direction{
 		  case ARC_RIGHT:
 				return ARC_LEFT;	
           default:
-               return null;                   
+               return this;                   
+          }
+    }
+public Direction invertTurns(){
+     switch(this){
+          case SPIN_BACK:
+               return SPIN_BACK;
+          case SPIN_LEFT:
+               return SPIN_RIGHT;  
+          case SPIN_RIGHT:
+               return SPIN_LEFT;
+           case ARC_LEFT:
+		 return ARC_RIGHT;
+	    case ARC_RIGHT:
+		  return ARC_LEFT;	
+          default:
+               return this;                   
           }
     }
 }
