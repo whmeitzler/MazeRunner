@@ -112,7 +112,7 @@ public class AutoRobot {
         move(Direction.SPIN_BACK);
         path.pop();     //Clears the forward move into the dead end.
         
-        while(count > 0) {
+        while(count > 0) {//ISSUE: What is count? Should it be path.size() instead?
             d = path.pop();
             switch(d) {
                 case ARC_RIGHT:
