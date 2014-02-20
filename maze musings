@@ -1,0 +1,42 @@
+Logic of maze runner:
+
+[B][W][B]
+White is in between 2 non-whites
+Path running forward
+Move forward
+
+[B][B][B]
+All Blacks
+Dead end;
+turn around
+
+[W][W][W]
+White in the center and 1+ other whites
+Multiple paths. Follow rightmost path. Mark that this is an intersection?
+
+[*][R][*]
+Red dead ahead
+Move forward
+End found!
+
+Intersections are the challenge
+How do I keep track of where there are unexplored paths?
+Keep a map of intersections?
+Don't bother with paths, we can follow a line
+Just turn the right way!
+
+So:
+Follow all paths
+Identify and store all intersections
+Dead ends count as an intersection with only one point
+Note intersection you just left so you can update appropriate values
+Go to start and spin
+Beep
+Go to end 
+Profit
+???
+
+Weighted lines would be useful to find the absolute shortest path
+
+
+
