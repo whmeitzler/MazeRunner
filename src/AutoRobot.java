@@ -10,16 +10,23 @@ public class AutoRobot {
     
     public static TileSet tiles;
     
-    private static LightSensor lCenter = new LightSensor(SensorPort.S1);
-    private static LightSensor lRight = new LightSensor(SensorPort.S2);
-    private static LightSensor lLeft = new LightSensor(SensorPort.S3);
+	private static Compass compass;
+	
+    private static LightSensor lCenter;
+    private static LightSensor lRight;
+    private static LightSensor lLeft;
                                                                                                        
     private static DifferentialPilot pilot;
 
     public AutoRobot() {
         
         path = new Stack<Direction>(); 
-        
+        compass = new Compass();
+		
+		lCenter = new LightSensor(SensorPort.S1);
+		lRight = new LightSensor(SensorPort.S2);
+		lLeft = new LightSensor(SensorPort.S3);
+		
         pilot = new DifferentialPilot(56f, 107f, Motor.B, Motor.C);
         pilot.setTravelSpeed(100);
         pilot.setRotateSpeed(80);
@@ -43,6 +50,7 @@ public class AutoRobot {
 	public void move(Direction d){
 		pilot.arc(d.radius * TILE_SIZE, d.angle);//angular component
 		pilot.travel(d.travel * TILE_SIZE);//linear component
+		pilot.compass.update(d.toRightInt());
 	}
     
     public boolean checkPath(Direction direction) {

@@ -14,7 +14,17 @@ public class Compass{
 	public void turnRight(){
 		heading = (heading + 1) % 4;
 	}
-	public int goNorth(){
+	public int toNorth(){
 		return degrees[heading];
 	}
+	public void setHeading(int heading){
+		if(heading > 0 && heading < degrees.length)
+				this.heading = heading;
+	}
+    public void update(int changeBy){
+        changeBy = changeBy + heading;
+        while(changeBy <= 0)
+            changeBy += 4;
+        heading = changeBy;            
+    }
 }
