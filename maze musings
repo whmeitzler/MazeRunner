@@ -38,5 +38,42 @@ Profit
 
 Weighted lines would be useful to find the absolute shortest path
 
+So 
 
-
+The robot has a Pose, which is a convenient way to find and maintain its vector position relative to start. 
+Each node will now have a Point that identifies its location relative to the origin. 
+As the robot navigates, it will  keep its master Pose updated
+Exploration:
+Robot identifies a node by its light sensors
+Robot searches its graph to see if there is a Node at its current point
+	if so, that node and the previously visited node are linked
+	if not, a new node is created and is doubly linked with the previous node
+	
+Note that in linking, the current Pose of the robot is 180 degrees offset the direction the Node will store the link as 
+The previous node can be stored as a Node and an int representing the heading by which the robot left the node. 
+	We will mention the robot must keep track of the number of non-node tiles traversed as well 
+It may be convenient to store these Nodes in a Map by their locations for quick lookup. Avoids whole graph 
+  traversal just to find a specific node. The Map can also store tiles for screen and data display. Sounds fun! 
+  A NodeMap is a collection of Nodes
+So a Node has the following information:
+	-A Point representing its vector  position relative to the start square
+	-A Tile type (White, Blue, Red) to identify start,end, general
+	-An array of Node pointers for each cardinal direction 
+	-An array of integer line weights for each cardinal direction 	
+	-public static ints for NORTH, SOUTH, EAST, WEST representing the robot's end heading for each cardinal direction
+	-protected static ints NORTH_INDEX, ..., WEST_INDEX representing the array indices for node pointers and integer weights
+A NodeMap offers the following operations:
+	static void linkNode(Pose leadingHeading, Pose finalHeading)
+  static void lookupNode(Point p)
+  static int numNodes()
+  static Point exitLocation()
+  static List<Integer>  getShortestPath(Point start, Point end)//Return a list of ints of alternating heading and distances
+  static void addNode(Pose position, Tile type);
+  static void addTile(Point position, Tile tile);
+  static void writeToCSV(String fileName);//This will need work to visualize. Perhaps real-time updating over BT in the future?
+ And has 
+  static Map<Node>
+  
+  
+  
+  
